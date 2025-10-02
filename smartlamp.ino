@@ -1,18 +1,21 @@
 // Defina os pinos de LED e LDR
 // Defina uma variável com valor máximo do LDR (4000)
 // Defina uma variável para guardar o valor atual do LED (10)
-int ledPin;
+int ledPin = 23;
 int ledValue;
 
-int ldrPin;
+int ldrPin = 36;
 // Faça testes no sensor ldr para encontrar o valor maximo e atribua a variável ldrMax
 int ldrMax;
+
+int max_led = 15;
 
 void setup() {
     Serial.begin(9600);
     
     pinMode(ledPin, OUTPUT);
     pinMode(ldrPin, INPUT);
+    analogSetAttenuation(ADC_11db);
     
     Serial.printf("SmartLamp Initialized.\n");
 
@@ -20,9 +23,25 @@ void setup() {
 }
 
 // Função loop será executada infinitamente pelo ESP32
-void loop() {
+  void loop() {
     //Obtenha os comandos enviados pela serial 
     //e processe-os com a função processCommand
+
+    int analogValue = analogRead(ldrPin);
+    Serial.print("Analog Value = ");
+    Serial.print(analogValue);   // the raw analog reading
+    Serial.print("\n");
+    if(max_led <= 0) return;
+    
+    digitalWrite(ledPin, HIGH);
+    Serial.printf("LIGADO...\n");
+
+    delay(3000);
+    
+    digitalWrite(ledPin, LOW);
+    Serial.printf("Desligado...\n");
+    max_led--;
+    delay(3000);
 }
 
 
