@@ -27,21 +27,20 @@ void setup() {
     //Obtenha os comandos enviados pela serial 
     //e processe-os com a função processCommand
 
-    int analogValue = analogRead(ldrPin);
-    Serial.print("Analog Value = ");
-    Serial.print(analogValue);   // the raw analog reading
-    Serial.print("\n");
-    if(max_led <= 0) return;
-    
-    digitalWrite(ledPin, HIGH);
-    Serial.printf("LIGADO...\n");
-
-    delay(3000);
-    
-    digitalWrite(ledPin, LOW);
-    Serial.printf("Desligado...\n");
-    max_led--;
-    delay(3000);
+    int analogValue = ldrGetValue();
+    if(analogValue < 3){
+      Serial.print("Analog Value = ");
+      Serial.print(analogValue);   // the raw analog reading
+      Serial.print("\n");
+      
+      digitalWrite(ledPin, HIGH);
+      Serial.printf("LIGADO...\n");
+      delay(3000);
+    }else{
+      digitalWrite(ledPin, LOW);
+      Serial.printf("Desligado...\n");
+      delay(500);
+    }
 }
 
 
@@ -60,4 +59,10 @@ int ldrGetValue() {
     // Leia o sensor LDR e retorne o valor normalizado entre 0 e 100
     // faça testes para encontrar o valor maximo do ldr (exemplo: aponte a lanterna do celular para o sensor)       
     // Atribua o valor para a variável ldrMax e utilize esse valor para a normalização
+
+    double max_value = 4095.0;
+    double analogValue = analogRead(ldrPin);
+    int final_value = (int) ((analogValue/max_value)*100);
+    return final_value;
+    
 }
