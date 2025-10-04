@@ -15,43 +15,71 @@ void setup() {
     
     pinMode(ledPin, OUTPUT);
     pinMode(ldrPin, INPUT);
+    
     analogSetAttenuation(ADC_11db);
     
     Serial.printf("SmartLamp Initialized.\n");
-
-
+    
 }
 
 // Função loop será executada infinitamente pelo ESP32
   void loop() {
     //Obtenha os comandos enviados pela serial 
     //e processe-os com a função processCommand
+    
+    if(Serial.available() > 0)
+    {
+      String command = Serial.readStringUntil('\n');
+      command.trim();
+      processCommand(command);
+    }
 
-    int analogValue = ldrGetValue();
-    if(analogValue < 3){
-      Serial.print("Analog Value = ");
-      Serial.print(analogValue);   // the raw analog reading
-      Serial.print("\n");
-      
-      digitalWrite(ledPin, HIGH);
-      Serial.printf("LIGADO...\n");
-      delay(3000);
-    }else{
+      /*if(command == "on"x)
+      {
+          int analogValue = ldrGetValue();
+          if(analogValue < 2){
+            Serial.print("Analog Value = ");
+            Serial.print(analogValue);   // the raw analog reading
+            Serial.print("\n");
+            
+            digitalWrite(ledPin, HIGH);
+            Serial.printf("LIGADO...\n");
+            delay(3000);
+          }
+      }
+      else{
       digitalWrite(ledPin, LOW);
       Serial.printf("Desligado...\n");
       delay(500);
+      } */
+    
+}
+
+void processCommand(String command) 
+{
+    // compare o comando com os comandos possíveis e execute a ação correspondente
+
+    int value = command.indexOf(" ");
+    String comandoUser = command.substring(0, value);
+    
+
+
+    if(comandoUser == "SET_LED")
+    {
+      ledUpdate(command.substring(value).toInt());
     }
 }
 
 
-void processCommand(String command) {
-    // compare o comando com os comandos possíveis e execute a ação correspondente      
-}
-
 // Função para atualizar o valor do LED
-void ledUpdate() {
+void ledUpdate(int valor)
+{
     // Valor deve convertar o valor recebido pelo comando SET_LED para 0 e 255
     // Normalize o valor do LED antes de enviar para a porta correspondente
+
+    int valorNormalizado = valor%256;
+    digitalWrite(ledPin, valorNormalizado);
+    Serial.println(valorNormalizado);
 }
 
 // Função para ler o valor do LDR
@@ -62,6 +90,7 @@ int ldrGetValue() {
 
     double max_value = 4095.0;
     double analogValue = analogRead(ldrPin);
+   
     int final_value = (int) ((analogValue/max_value)*100);
     return final_value;
     
