@@ -33,26 +33,11 @@ void setup() {
       command.trim();
       processCommand(command);
     }
-
-      /*if(command == "on"x)
-      {
-          int analogValue = ldrGetValue();
-          if(analogValue < 2){
-            Serial.print("Analog Value = ");
-            Serial.print(analogValue);   // the raw analog reading
-            Serial.print("\n");
-            
-            digitalWrite(ledPin, HIGH);
-            Serial.printf("LIGADO...\n");
-            delay(3000);
-          }
-      }
-      else{
-      digitalWrite(ledPin, LOW);
-      Serial.printf("Desligado...\n");
-      delay(500);
-      } */
-    
+    else
+    {
+      processCommand("GET_LDR");
+      delay(2000);
+    }
 }
 
 void processCommand(String command) 
@@ -61,12 +46,22 @@ void processCommand(String command)
 
     int value = command.indexOf(" ");
     String comandoUser = command.substring(0, value);
-    
-
 
     if(comandoUser == "SET_LED")
     {
       ledUpdate(command.substring(value).toInt());
+    }
+    else if(comandoUser == "GET_LED")
+    {
+      
+    }
+    else if(comandoUser == "GET_LDR")
+    {
+      Serial.println(ldrGetValue());
+    }
+    else if(comandoUser == "SET_THRESHOLD")
+    {
+      
     }
 }
 
