@@ -108,6 +108,11 @@ static int usb_probe(struct usb_interface *interface, const struct usb_device_id
         printk(KERN_INFO "SmartLamp: Valor do LDR recebido: %d\n", ret);
     }
 
+    ret = usb_read_serial();
+    if (ret >= 0) {
+        printk(KERN_INFO "SmartLamp: Valor do LDR recebido: %d\n", ret);
+    }
+
     return 0;
 }
 
@@ -159,7 +164,7 @@ static int usb_read_serial(void) {
                            usb_in_buffer,
                            usb_max_size,
                            &actual_size,
-                           2000);  // timeout de 2 segundos
+                           5000);  // timeout de 2 segundos
 
         if (ret) {
             printk(KERN_ERR "SmartLamp: Erro na leitura da porta serial (código %d)\n", ret);
@@ -172,14 +177,13 @@ static int usb_read_serial(void) {
             if (usb_in_buffer[i] == '\n') {
                 recv_line[recv_size] = '\0'; // Finaliza string
                 int value = -1;
-                printk(KERN_INFO "SmartLamp: Buffer: %s", usb_in_buffer);
+                
 
                 if (sscanf(recv_line, "RES %*s %d", &value) == 1) {
-                    printk(KERN_INFO "SmartLamp: Linha recebida: %s", recv_line);
                     return value;
                 } else {
                     printk(KERN_ERR "SmartLamp: Erro ao interpretar a linha: %s", recv_line);
-                    return 5;
+                    return -1;
                 }
             }
         }
