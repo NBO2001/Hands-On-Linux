@@ -9,10 +9,10 @@ int ldrPin = 36;
 int ldrMax;
 
 int max_led = 15;
+int threshold = 50;
 
 void setup() {
     Serial.begin(9600);
-    
     pinMode(ledPin, OUTPUT);
     pinMode(ldrPin, INPUT);
     
@@ -35,6 +35,16 @@ void setup() {
     }
     else
     {
+      int ldrValue = ldrGetValue();
+
+      if(ldrValue < threshold)
+      {
+        ledUpdate(max_led);
+      }
+      else
+      {
+        ledUpdate(0);  
+      }
       processCommand("GET_LDR");
       delay(2000);
     }
@@ -53,15 +63,29 @@ void processCommand(String command)
     }
     else if(comandoUser == "GET_LED")
     {
-      
+      Serial.printf("RES GET_LED %d\n", ledValue);      
     }
     else if(comandoUser == "GET_LDR")
     {
-      Serial.println(ldrGetValue());
+      Serial.printf("RES GET_LDR %d\n", ldrGetValue());
     }
     else if(comandoUser == "SET_THRESHOLD")
     {
-      
+        int val = command.substring(value+1).toInt();
+
+        if(val < 0) val = 0;
+
+        if(val> 100) val = 100;
+
+        threshold = val;
+
+         Serial.printf("RES SET_THRESHOLD %d\n", threshold);
+    }
+    else if(comandoUser == "GET_THRESHOLD"){
+       Serial.printf("RES GET_THRESHOLD %d\n", threshold);
+    }
+    else{
+      Serial.printf("ERR Unknown command\n");
     }
 }
 
@@ -74,8 +98,9 @@ void ledUpdate(int valor)
 
     int valorNormalizado = valor%256;
     digitalWrite(ledPin, valorNormalizado);
-    Serial.println(valorNormalizado);
+    ledValue = valorNormalizado;
 }
+
 
 // Função para ler o valor do LDR
 int ldrGetValue() {
