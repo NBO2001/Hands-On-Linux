@@ -15,7 +15,9 @@ void setup() {
     Serial.begin(9600);
     pinMode(ledPin, OUTPUT);
     pinMode(ldrPin, INPUT);
-    analogSetAttenuation(ADC_11db); 
+    
+    analogSetAttenuation(ADC_11db);
+    
     Serial.printf("SmartLamp Initialized.\n");
     
 }
